@@ -12,7 +12,7 @@ const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE
+  database: process.env.DB_NAME
 });
 
 app.use(async function(req, res, next) {
@@ -40,9 +40,12 @@ app.use(express.json());
 
 app.get('/cars', async function(req, res) {
   try {
-    console.log('/cars/:id')
+    const [cars] = await req.db.query(`SELECT * FROM car WHERE deleted_flag=0`);
+    // console.log('/test endpoint reached');
+    // console.log(cars)
+    res.json(cars);
   } catch (err) {
-    
+    res.json({ success: false, message: err, data: null })
   }
 });
 
