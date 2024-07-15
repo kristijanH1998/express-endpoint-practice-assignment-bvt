@@ -83,18 +83,28 @@ app.post('/car', async function(req, res) {
 app.delete('/car/:id', async function(req,res) {
   try {
     console.log('req.params /car/:id', req.params)
+    const { id } = req.params;
+    await req.db.query(
+      `UPDATE car SET deleted_flag = 1 WHERE id = :id`,
+      { id }
+    );
 
-    res.json('success')
+    res.json({ success: true, message: 'Car successfully deleted', data: null })
   } catch (err) {
-
+    res.json({ success: false, message: err, data: null })
   }
 });
 
 app.put('/car', async function(req,res) {
   try {
-
+    const {id, make, model, year} = req.body;
+    const [cars] = await req.db.query(
+      `UPDATE car SET make = :make, model = :model, year = :year WHERE id = :id`,
+      {id, make, model, year}
+    );
+    res.json({ id, make, model, year, success: true });
   } catch (err) {
-
+    res.json({ success: false, message: err, data: null })
   }
 });
 
